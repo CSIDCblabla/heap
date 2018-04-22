@@ -98,7 +98,7 @@ public class TaskManager {
     	while( (t.compareTo(heap[2 * a]) < 0 | t.compareTo(heap[(2 * a) + 1]) < 0)) {
     		
     		if(t.compareTo(heap[2 * a]) < 0) {
-    			if(!(t.compareTo(heap[(2 * a) + 1]) < 0 && heap[(2 * a) + 1].compareTo(heap[2 * a]) > 0)) {
+    			
     			
     				this.availableData[heap[2 * a].serial] = a;
     				this.availableData[heap[a].serial] = 2 * a;
@@ -109,13 +109,7 @@ public class TaskManager {
     				if (heap[a * 4] == null) break;
     				if(heap[(a * 4) + 1] == null) {
     					a *= 2;
-    					if(t.compareTo(heap[a * 2]) > 0) {
-    						this.availableData[heap[2 * a].serial] = a;
-    	    				this.availableData[heap[a].serial] = 2 * a;
-    	    				Task s = t;
-    	    				heap[a] = heap[2 * a];
-    	    				heap[2 * a] = s;
-    	    			
+    					
     					}
     				}
     				a *= 2;
