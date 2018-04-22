@@ -43,7 +43,12 @@ public class TaskManager {
 	}
 		
 
-
+    /** Put a given task in the right place of a given heap, according 
+     * the priority of the task.
+     * @author dean
+     * @param heap
+     * @param t
+     */
 	public void PercolateUp(Task [] heap , Task t) {
 		int a = this.availableData[t.serial];
 		
@@ -82,54 +87,85 @@ public class TaskManager {
      */
 
     public Task extractMax(){
+    	
 		Task k = this.heap[1];
+		if(size == 1) {
+			size--;
+			this.heap[1] = null;
+			return k;
+		}
 		this.heap[1] = this.heap[size];
 		this.heap[size] = null;
 		
 		this.availableData[k.serial] = 0;
 		this.availableData[this.heap[1].serial] = 1;
 		size--;
+		if(size == 1) return k;
 		PercolateDown(this.heap , this.heap[1]);
 		return k;
     }
-    
+    /**Put a given task in the right place of a given heap, according 
+     * the priority of the task.
+     * @author dean
+     * @param heap
+     * @param t
+     */
     public void PercolateDown(Task [] heap , Task t) {
     	int a = this.availableData[t.serial];
-    	while( (t.compareTo(heap[2 * a]) < 0 | t.compareTo(heap[(2 * a) + 1]) < 0)) {
-    		
-    		if(t.compareTo(heap[2 * a]) < 0) {
+    	if(a == size / 2 && size % 2 == 0) {
+			if(t.compareTo(heap[2 * a]) < 0) {
+
     			
+				this.availableData[heap[2 * a].serial] = a;
+				this.availableData[heap[a].serial] = 2 * a;
+				
+				Task k = t;
+				heap[a] = heap[2 * a];
+				heap[2 * a] = k;
+			}
+		}else {
+				
+    		while( (t.compareTo(heap[2 * a]) < 0 | t.compareTo(heap[(2 * a) + 1]) < 0)) {
+    		
+    			if(t.compareTo(heap[2 * a]) < 0) {
+
     			
     				this.availableData[heap[2 * a].serial] = a;
     				this.availableData[heap[a].serial] = 2 * a;
+    				
     				Task k = t;
     				heap[a] = heap[2 * a];
     				heap[2 * a] = k;
-    			
-    				if (heap[a * 4] == null) break;
-    				if(heap[(a * 4) + 1] == null) {
-    					a *= 2;
-    					
-    					}
-    				}
     				a *= 2;
-    			}
-    		}else {
+    				
+    			} else {
 
-    			this.availableData[heap[(2 * a) + 1].serial] = a;
-    			this.availableData[heap[a].serial] = (2 * a) + 1;
-    			Task k = t;
-    			heap[a] = heap[(2 * a) + 1];
-    			heap[(2 * a) + 1] = k;
+    				this.availableData[heap[(2 * a) + 1].serial] = a;
+    				this.availableData[heap[a].serial] = (2 * a) + 1;
     			
-    			if (heap[(((a * 2) + 1) * 2) + 1] == null) break;
-    			a *= 2 + 1;
+    				Task k = t;
+    				heap[a] = heap[(2 * a) + 1];
+    				heap[(2 * a) + 1] = k;
+    				a *= 2 + 1;
+    			}
+    			if(a > (size / 2)) break;
+    			if(size % 2 == 0 && a == size / 2) {
+    				if(t.compareTo(heap[2 * a]) < 0) {
+
+        			
+    					this.availableData[heap[2 * a].serial] = a;
+    					this.availableData[heap[a].serial] = 2 * a;
+    				
+    					Task k = t;
+    					heap[a] = heap[2 * a];
+    					heap[2 * a] = k;
+    					break;
+    				}
+    			}
     		}
-    		
-    	
-    	}
-    	
+		}
     }
+		
 
 
     
@@ -143,7 +179,7 @@ public class TaskManager {
      * @param newPriority - the new priority of the given task.
      */
     public void updatePriority(Task t, int newPriority){
-		if(this.availableData[t.serial] != 0 && t.serial != newPriority) {
+		if(this.availableData[t.serial] != 0 && t.priority != newPriority) {
 			if (newPriority > t.priority) {
 				t.priority = newPriority;
 				PercolateUp(this.heap , t);
@@ -154,17 +190,7 @@ public class TaskManager {
 		}
     }
     
-    public static void printHeap(Task[] heap, int size) {
-        System.out.printf("\n\n|     (%s)\n", heap[0].priority);
-        for (int i = 1, j = 2; i <= size; j *= 2) {
-          String str = "";
-          for (int d = 0; d < j && i <= size; d++) {
-            str += " (" + heap[i].priority + ") ";
-            i++;
-          }
-          System.out.printf("| %s\n", str);
-        }
-      }
+  
 	
     /*
      * Test code; output should be:
@@ -183,32 +209,22 @@ public class TaskManager {
     	Task d = new Task(4, 20, "download new version");
     	
     	demo.insert(a);
-    	//System.out.println(demo.findMax());
+    	System.out.println(demo.findMax());
     	
     	demo.insert(b);
     	demo.insert(c);
     	demo.insert(d);
     	//System.out.println(demo.extractMax());
-    	//demo.updatePriority(b, 11);
+    	demo.updatePriority(b, 11);
     	demo.updatePriority(d, 0);
+  
+    	System.out.println(demo.findMax());
     	
-    	System.out.println(demo.heap [1]+"    "+demo.availableData[1]);
-    	System.out.println(demo.heap [2]+"    "+demo.availableData[2]);
-    	System.out.println(demo.heap [3]+"    "+demo.availableData[3]);
-    	System.out.println(demo.heap [4]+"    "+demo.availableData[4]);
-    	
-    	/*System.out.println(demo.findMax());
     	
     	System.out.println(demo.extractMax());
-    	//printHeap(demo.heap, demo.size);
-    	
-    	System.out.println(demo.findMax());
-    	  */
-    	
-    	//System.out.println(demo.extractMax());
-    	//System.out.println(demo.extractMax());
-    	//System.out.println(demo.extractMax());
-    	//System.out.println(demo.extractMax());
+    	System.out.println(demo.extractMax());
+    	System.out.println(demo.extractMax());
+    	System.out.println(demo.extractMax());
     	
     }
 }
